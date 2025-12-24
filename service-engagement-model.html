@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engagement Models | Austin1.ai</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="chatbot.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#020617', 
+                            primary: '#0891b2', 
+                            accent: '#2563eb',
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0891b2; }
+
+        /* Navigation */
+        .glass-nav {
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Sticky Sub-Nav */
+        .sub-nav-sticky {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        /* Schematic Grid Lines */
+        .schematic-grid {
+            background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* Watermark Numbers - UPDATED TO BLACK */
+        .watermark {
+            position: absolute;
+            top: -20px;
+            right: 0;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 10rem;
+            font-weight: 800;
+            line-height: 1;
+            /* Black with 5% opacity for subtlety */
+            color: rgba(5, 4, 4, 0.05); 
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Feature List Item Hover */
+        .feature-item {
+            transition: all 0.3s ease;
+            border-left: 2px solid transparent;
+        }
+        .feature-item:hover {
+            border-left: 2px solid #0891b2;
+            background: rgba(241, 245, 249, 0.5);
+            padding-left: 1rem;
+        }
+        .feature-item:hover .icon-box {
+            color: #0891b2;
+            transform: scale(1.1);
+        }
+
+    </style>
+</head>
+<body class="font-sans text-slate-600 antialiased bg-white selection:bg-cyan-500 selection:text-white">
+
+    <header class="fixed w-full top-0 z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-24">
+              <a href="index.html" class="flex items-center group">
+  <div class="bg-white/90 backdrop-blur rounded-xl px-2 py-1 shadow-lg">
+    <img src="images/logo.png" alt="Austin1.ai logo" class="h-10 w-auto">
+  </div>
+</a>
+
+                <nav class="hidden md:flex space-x-10 items-center">
+                    <a href="index.html" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest">Home</a>
+                    
+                    <a href="index.html#solutions" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest">Solutions</a>
+                    <a href="index.html#platform" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest">Platform</a>
+                    <a href="about.html" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest">Company</a>
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <a href="index.html#contact" class="hidden md:inline-flex items-center justify-center px-6 py-2.5 border border-white/10 text-sm font-bold uppercase tracking-wider rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all duration-300">
+                        Contact Us
+                    </a>
+                    <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="relative h-[60vh] flex items-center bg-slate-900 overflow-hidden border-b border-slate-800">
+        <div class="absolute inset-0 z-0">
+            <video autoplay loop muted playsinline class="w-full h-full object-cover opacity-30">
+                <source src="video2.mp4" type="video/mp4">
+            </video>
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full pt-20">
+            <div class="max-w-4xl animate-fade-in-up">
+                <span class="inline-flex items-center gap-2 py-1 px-3 rounded-full border border-cyan-500/30 bg-cyan-950/30 text-cyan-300 text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-md">
+                    <i class="fa-solid fa-handshake"></i> Talent Services
+                </span>
+                
+                <h1 class="font-display text-5xl md:text-7xl font-bold text-white tracking-tight leading-tight mb-6">
+                    Flexible <br />
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Engagement Models</span>
+                </h1>
+                
+                <p class="text-xl text-slate-300 font-light leading-relaxed max-w-2xl border-l-2 border-cyan-500 pl-6">
+                    A multi-layered approach to sourcing, deployment, and enablement. We tailor our engagement to fit your project lifecycle, budget, and technical requirements.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <div class="sticky top-24 z-40 sub-nav-sticky shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex overflow-x-auto space-x-8 py-4 no-scrollbar">
+                <a href="#permanent" class="whitespace-nowrap text-sm font-bold uppercase tracking-widest text-slate-500 hover:text-cyan-600 transition-colors">01. Permanent Recruitment</a>
+                <a href="#jit" class="whitespace-nowrap text-sm font-bold uppercase tracking-widest text-slate-500 hover:text-cyan-600 transition-colors">02. Just-in-Time Services</a>
+                <a href="#resource" class="whitespace-nowrap text-sm font-bold uppercase tracking-widest text-slate-500 hover:text-cyan-600 transition-colors">03. Resource Enablement</a>
+            </div>
+        </div>
+    </div>
+
+    <section id="permanent" class="relative py-24 bg-white overflow-hidden">
+        <div class="absolute inset-0 pointer-events-none schematic-grid opacity-30"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="relative mb-16">
+                <div class="watermark">01</div>
+                <div class="relative z-10 max-w-2xl">
+                    <h2 class="font-display text-4xl font-bold text-slate-900 mb-6">Permanent Recruitment</h2>
+                    <p class="text-lg text-slate-600 leading-relaxed">
+                        Attract and retain high-quality employees for long-term success. We handle the heavy lifting of sourcing and vetting, ensuring cultural and technical fit.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-cyan-600 mb-8 flex items-center gap-2">
+                        <span class="w-8 h-px bg-cyan-600"></span> Key Components
+                    </h3>
+                    
+                    <div class="space-y-2">
+                        <div class="feature-item group p-4 border-b border-slate-100">
+                            <div class="flex items-start gap-4">
+                                <div class="icon-box text-slate-400 group-hover:text-cyan-600 transition-colors mt-1">
+                                    <i class="fa-solid fa-magnifying-glass text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 mb-1 group-hover:text-cyan-600 transition-colors">Candidate Sourcing</h4>
+                                    <p class="text-sm text-slate-500">Utilizing professional networks and pre-screened databases to find the perfect match.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="feature-item group p-4 border-b border-slate-100">
+                            <div class="flex items-start gap-4">
+                                <div class="icon-box text-slate-400 group-hover:text-cyan-600 transition-colors mt-1">
+                                    <i class="fa-solid fa-filter text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 mb-1 group-hover:text-cyan-600 transition-colors">Screening & Selection</h4>
+                                    <p class="text-sm text-slate-500">Rigorous assessments to verify qualifications and cultural alignment.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="feature-item group p-4 border-b border-slate-100">
+                            <div class="flex items-start gap-4">
+                                <div class="icon-box text-slate-400 group-hover:text-cyan-600 transition-colors mt-1">
+                                    <i class="fa-solid fa-handshake text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 mb-1 group-hover:text-cyan-600 transition-colors">Offer Management</h4>
+                                    <p class="text-sm text-slate-500">Facilitating salary negotiations and seamless onboarding support.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500 mb-6">Business Impact</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-100 flex items-center gap-3">
+                            <i class="fa-solid fa-check text-cyan-500"></i>
+                            <span class="text-sm font-semibold">Larger Talent Pool</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-100 flex items-center gap-3">
+                            <i class="fa-solid fa-check text-cyan-500"></i>
+                            <span class="text-sm font-semibold">Cost Efficiency</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-100 flex items-center gap-3">
+                            <i class="fa-solid fa-check text-cyan-500"></i>
+                            <span class="text-sm font-semibold">Reduced Turnover</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-100 flex items-center gap-3">
+                            <i class="fa-solid fa-check text-cyan-500"></i>
+                            <span class="text-sm font-semibold">Expertise Access</span>
+                        </div>
+                    </div>
+                    <div class="mt-8 pt-8 border-t border-slate-200">
+                        <a href="index.html#contact" class="inline-flex items-center text-sm font-bold text-cyan-600 hover:text-cyan-800 uppercase tracking-widest transition-colors">
+                            Start Hiring <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="jit" class="relative py-24 bg-slate-50 overflow-hidden border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="relative mb-16 text-right">
+                <div class="watermark left-0 right-auto">02</div>
+                <div class="relative z-10 max-w-2xl ml-auto">
+                    <h2 class="font-display text-4xl font-bold text-slate-900 mb-6">Just-in-Time (JIT) Services</h2>
+                    <p class="text-lg text-slate-600 leading-relaxed">
+                        Remain lean and agile. Deploy the right talent exactly when project demands spike, minimizing costs associated with a non-billable workforce.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <div class="bg-white p-8 rounded-2xl border border-slate-200 order-2 lg:order-1">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500 mb-6">Strategic Advantages</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4 p-3 bg-slate-50 rounded-lg">
+                            <div class="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-600 flex-shrink-0 mt-1">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">Flexibility & Agility</h4>
+                                <p class="text-xs text-slate-500 mt-1">Scale teams up or down instantly based on project phases.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 p-3 bg-slate-50 rounded-lg">
+                            <div class="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-600 flex-shrink-0 mt-1">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">Improved Utilization</h4>
+                                <p class="text-xs text-slate-500 mt-1">Pay only for the specific skills needed for specific durations.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 p-3 bg-slate-50 rounded-lg">
+                            <div class="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-600 flex-shrink-0 mt-1">
+                                <i class="fa-solid fa-crosshairs"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">Focus on Core</h4>
+                                <p class="text-xs text-slate-500 mt-1">Your core team focuses on strategy while JIT talent handles execution.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-1 lg:order-2">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-cyan-600 mb-8 flex items-center gap-2 justify-end">
+                        Execution Model <span class="w-8 h-px bg-cyan-600"></span>
+                    </h3>
+                    
+                    <div class="space-y-2 text-right">
+                        <div class="feature-item group p-4 border-b border-slate-200">
+                            <div class="flex items-start justify-end gap-4">
+                                <div class="text-right">
+                                    <h4 class="font-bold text-slate-900 mb-1 group-hover:text-cyan-600 transition-colors">Dynamic Allocation</h4>
+                                    <p class="text-sm text-slate-500">Allocating resources based on immediate, real-time demand.</p>
+                                </div>
+                                <div class="icon-box text-slate-400 group-hover:text-cyan-600 transition-colors mt-1">
+                                    <i class="fa-solid fa-shuffle text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="feature-item group p-4 border-b border-slate-200">
+                            <div class="flex items-start justify-end gap-4">
+                                <div class="text-right">
+                                    <h4 class="font-bold text-slate-900 mb-1 group-hover:text-cyan-600 transition-colors">Talent Pool Mgmt</h4>
+                                    <p class="text-sm text-slate-500">Maintaining a vetted bench of full-time and freelance experts.</p>
+                                </div>
+                                <div class="icon-box text-slate-400 group-hover:text-cyan-600 transition-colors mt-1">
+                                    <i class="fa-solid fa-users-viewfinder text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="feature-item group p-4 border-b border-slate-200">
+                            <div class="flex items-start justify-end gap-4">
+                                <div class="text-right">
+                                    <h4 class="font-bold text-slate-900 mb-1 group-hover:text-cyan-600 transition-colors">On-Demand Hiring</h4>
+                                    <p class="text-sm text-slate-500">Rapid deployment mechanisms to fill skill gaps instantly.</p>
+                                </div>
+                                <div class="icon-box text-slate-400 group-hover:text-cyan-600 transition-colors mt-1">
+                                    <i class="fa-solid fa-stopwatch text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="resource" class="relative py-24 bg-white overflow-hidden border-t border-slate-200">
+        <div class="absolute inset-0 pointer-events-none schematic-grid opacity-30"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="relative mb-16">
+                <div class="watermark">03</div>
+                <div class="relative z-10 max-w-2xl">
+                    <h2 class="font-display text-4xl font-bold text-slate-900 mb-6">Resource Enablement</h2>
+                    <p class="text-lg text-slate-600 leading-relaxed">
+                        Ensuring employees have the tools, knowledge, and processes to perform at their best. We drive productivity and innovation through enablement.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-cyan-600 mb-8 flex items-center gap-2">
+                        <span class="w-8 h-px bg-cyan-600"></span> Enablement Pillars
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-100 hover:border-cyan-200 transition-colors">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fa-solid fa-graduation-cap text-cyan-600"></i>
+                                <h4 class="font-bold text-slate-900">Training & Development</h4>
+                            </div>
+                            <p class="text-sm text-slate-500">Continuous learning workshops, certifications, and mentorship programs to facilitate knowledge transfer.</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-100 hover:border-cyan-200 transition-colors">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fa-solid fa-toolbox text-cyan-600"></i>
+                                <h4 class="font-bold text-slate-900">Tools & Technology</h4>
+                            </div>
+                            <p class="text-sm text-slate-500">Providing access to the latest software stacks and hardware required for specific roles.</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-100 hover:border-cyan-200 transition-colors">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fa-solid fa-diagram-project text-cyan-600"></i>
+                                <h4 class="font-bold text-slate-900">Process Optimization</h4>
+                            </div>
+                            <p class="text-sm text-slate-500">Streamlining workflows to remove bottlenecks and implementing standard operating procedures.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col justify-center">
+                    <div class="p-8 border-l-4 border-slate-200 pl-8">
+                        <h3 class="text-2xl font-display font-bold text-slate-900 mb-6">The Outcome</h3>
+                        <ul class="space-y-6">
+                            <li class="flex items-start gap-4">
+                                <span class="font-display text-4xl font-bold text-cyan-100 text-stroke">01</span>
+                                <div>
+                                    <h5 class="font-bold text-slate-900">Increased Productivity</h5>
+                                    <p class="text-sm text-slate-500">Teams hit the ground running with the right resources.</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <span class="font-display text-4xl font-bold text-cyan-100 text-stroke">02</span>
+                                <div>
+                                    <h5 class="font-bold text-slate-900">Faster Time to Market</h5>
+                                    <p class="text-sm text-slate-500">Eliminating friction points accelerates delivery cycles.</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <span class="font-display text-4xl font-bold text-cyan-100 text-stroke">03</span>
+                                <div>
+                                    <h5 class="font-bold text-slate-900">Innovation & Growth</h5>
+                                    <p class="text-sm text-slate-500">Empowered employees drive better solutions.</p>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="mt-10">
+                            <a href="index.html#contact" class="px-8 py-4 bg-slate-900 text-white font-bold uppercase tracking-widest text-xs hover:bg-cyan-600 transition-colors rounded-sm">
+                                Empower Your Team
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900 text-white pt-24 pb-12 border-t border-slate-800 relative z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+                <div class="col-span-1 md:col-span-1">
+                  <a href="index.html" class="flex items-center group">
+  <div class="bg-white/90 backdrop-blur rounded-xl px-2 py-1 shadow-lg">
+    <img src="images/logo.png" alt="Austin1.ai logo" class="h-10 w-auto">
+  </div>
+</a>
+
+                    <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                        Orchestrating the AI-Native Future for the modern enterprise.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-widest mb-6 text-slate-500">Solutions</h4>
+                    <ul class="space-y-4 text-sm font-medium">
+                        <li><a href="telecom-services.html" class="hover:text-cyan-400 transition-colors">Infra for AI</a></li>
+                        <li><a href="it-services.html" class="hover:text-cyan-400 transition-colors">Digital for AI</a></li>
+                        <li><a href="team-enablement.html" class="hover:text-cyan-400 transition-colors">People for AI</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-widest mb-6 text-slate-500">Company</h4>
+                    <ul class="space-y-4 text-sm font-medium">
+                        <li><a href="about.html" class="hover:text-cyan-400 transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-cyan-400 transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-cyan-400 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-widest mb-6 text-slate-500">Stay Connected</h4>
+                    <form class="flex flex-col gap-4">
+                        <input type="email" placeholder="Email Address" class="bg-slate-800 border border-slate-700 text-white px-4 py-3 focus:outline-none focus:border-cyan-500 transition-colors">
+                        <button class="bg-white text-slate-900 px-4 py-3 font-bold uppercase tracking-widest hover:bg-cyan-500 hover:text-white transition-colors">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+                <p>&copy; 2025 Austin1.ai Inc. All rights reserved.</p>
+                <div class="flex space-x-8">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Use</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        /* Text Stroke Effect for Numbers */
+        .text-stroke {
+            -webkit-text-stroke: 1px #0891b2;
+            color: transparent;
+        }
+    </style>
+
+    <script>
+        const btn = document.getElementById('mobile-menu-btn');
+        // Add menu logic if needed
+    </script>
+    <script src="chatbot.js"></script>
+</body>
+</html>

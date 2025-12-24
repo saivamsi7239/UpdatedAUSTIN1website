@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telecom & Technology | Austin1.ai</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="chatbot.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#020617', 
+                            primary: '#0891b2', 
+                            accent: '#2563eb',
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0891b2; }
+
+        /* Navigation */
+        .glass-nav {
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- CONTRAST FLIP CARDS --- */
+        .card-container {
+            perspective: 1500px;
+            height: 420px; /* Taller for elegance */
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1.1); /* Snappy feel */
+            transform-style: preserve-3d;
+        }
+
+        .card-container.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        /* Shared Card Styles */
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            /* Dark Card on Light Background styling */
+            background: #0f172a; 
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.3); /* Deep shadow for pop */
+        }
+
+        /* FRONT: Visual Impact */
+        .card-front {
+            display: flex;
+            flex-direction: column;
+            z-index: 2;
+        }
+
+        .card-image-wrap {
+            height: 55%;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-image-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s ease;
+            filter: grayscale(100%);
+        }
+
+        .card-container:hover .card-image-wrap img {
+            transform: scale(1.1);
+            filter: grayscale(0%);
+        }
+
+        /* Overlay to blend image into dark bottom */
+        .card-image-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 0%, #0f172a 100%);
+        }
+
+        .card-front-content {
+            height: 45%;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+        }
+
+        /* Glowing indicator bar */
+        .card-bar {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 4px;
+            background: #334155;
+            border-radius: 2px;
+            transition: all 0.4s ease;
+        }
+
+        .card-container:hover .card-bar {
+            background: #22d3ee; /* Cyan */
+            width: 80%;
+            box-shadow: 0 0 10px #22d3ee;
+        }
+
+        /* BACK: Technical Details */
+        .card-back {
+            background: #1e293b; /* Slightly lighter slate for contrast */
+            transform: rotateY(180deg);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border: 1px solid rgba(34, 211, 238, 0.3); /* Cyan border */
+        }
+
+        /* Background grid for tech feel */
+        .card-back::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+
+        .card-icon-back {
+            width: 50px;
+            height: 50px;
+            background: rgba(34, 211, 238, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #22d3ee;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+        }
+
+    </style>
+</head>
+<body class="font-sans text-slate-600 antialiased bg-slate-50 selection:bg-cyan-500 selection:text-white">
+
+    <header class="fixed w-full top-0 z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-24">
+             <a href="index.html" class="flex items-center group">
+  <div class="bg-white/90 backdrop-blur rounded-xl px-2 py-1 shadow-lg">
+    <img src="images/logo.png" alt="Austin1.ai logo" class="h-10 w-auto">
+  </div>
+</a>
+
+                <nav class="hidden md:flex space-x-10 items-center">
+                    <a href="index.html" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest">Home</a>
+                    <a href="index.html#solutions" class="text-sm font-medium text-white transition-colors uppercase tracking-widest border-b border-cyan-500">Solutions</a>
+                    <a href="index.html#platform" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest">Platform</a>
+                    <a href="index.html#resources" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest">Insights</a>
+                    <a href="about.html" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest">Company</a>
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <a href="index.html#contact" class="hidden md:inline-flex items-center justify-center px-6 py-2.5 border border-white/10 text-sm font-bold uppercase tracking-wider rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all duration-300">
+                        Contact Us
+                    </a>
+                    <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="relative h-[55vh] flex items-center bg-slate-900 overflow-hidden border-b border-slate-800">
+        <div class="absolute inset-0 z-0">
+            <video autoplay loop muted playsinline class="w-full h-full object-cover opacity-30">
+                <source src="dc.mp4" type="video/mp4">
+            </video>
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full pt-20">
+            <div class="max-w-4xl animate-fade-in-up">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="h-px w-10 bg-cyan-500"></div>
+                    <span class="text-cyan-400 text-xs font-bold uppercase tracking-[0.2em]">Core Infrastructure</span>
+                </div>
+                
+                <h1 class="font-display text-5xl md:text-7xl font-bold text-white tracking-tight leading-none mb-6">
+                    Open RAN <br />
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Solutions</span>
+                </h1>
+                
+                <p class="text-xl text-slate-300 font-light leading-relaxed max-w-2xl pl-1">
+                    Next-generation network architecture designed for the AI era. From OpenRAN deployment to hyperscale optimization.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 bg-slate-50 relative">
+        <div class="absolute inset-0" style="background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px); background-size: 40px 40px; opacity: 0.7;"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            
+            <div class="flex justify-between items-end mb-16">
+                <div>
+                    <h2 class="font-display text-3xl md:text-4xl font-bold text-slate-900 mb-2">Our Capabilities</h2>
+                    <p class="text-slate-500">Comprehensive solutions for the physical layer.</p>
+                </div>
+                
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="https://images.unsplash.com/photo-1562408590-e32931084e23?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="OpenRAN">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Architecture</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">OpenRAN</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">Disaggregated, virtualized radio access network architectures.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-network-wired"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">OpenRAN Solutions</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                                We specialize in the full lifecycle of OpenRAN deployment, decoupling hardware from software to provide flexibility, reduce costs, and avoid vendor lock-in.
+                            </p>
+                            <ul class="text-sm text-slate-400 space-y-2 mb-6">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> Virtualized RAN (vRAN)</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> COTS Hardware Integration</li>
+                            </ul>
+                            <a href="telecom-openran.html" class="mt-auto inline-flex items-center justify-center px-6 py-3 border border-white/20 text-xs font-bold uppercase tracking-widest rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all w-full">
+                                View Full Service
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Inbuilding">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Connectivity</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">In-Building</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">DAS and Small Cell solutions for high-density environments.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-building-signal"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">In-Building Wireless</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                                Ensuring seamless connectivity in complex environments like stadiums, airports, and campuses through advanced Distributed Antenna Systems (DAS).
+                            </p>
+                            <ul class="text-sm text-slate-400 space-y-2 mb-6">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> Active & Passive DAS</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> Small Cell Deployment</li>
+                            </ul>
+                            <a href="telecom-inbuilding.html" class="mt-auto inline-flex items-center justify-center px-6 py-3 border border-white/20 text-xs font-bold uppercase tracking-widest rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all w-full">
+                                View Full Service
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Design">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Engineering</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">Network Design</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">Strategic planning for greenfield and brownfield expansions.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-pen-ruler"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">Network Engineering</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                                From site surveys to RF planning, we design networks that balance coverage, capacity, and cost-efficiency using AI-driven modeling tools.
+                            </p>
+                            <ul class="text-sm text-slate-400 space-y-2 mb-6">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> RF Planning</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> Backhaul Design</li>
+                            </ul>
+                            <a href="telecom-design.html" class="mt-auto inline-flex items-center justify-center px-6 py-3 border border-white/20 text-xs font-bold uppercase tracking-widest rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all w-full">
+                                View Full Service
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Optimization">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Performance</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">Optimization</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">AI-driven enhancements for maximum throughput.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-chart-line"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">RF Optimization</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                                Continuous network tuning using machine learning to predict congestion and automatically adjust parameters for optimal user experience.
+                            </p>
+                            <ul class="text-sm text-slate-400 space-y-2 mb-6">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> Drive Testing</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> Interference Analysis</li>
+                            </ul>
+                            <a href="telecom-optimization.html" class="mt-auto inline-flex items-center justify-center px-6 py-3 border border-white/20 text-xs font-bold uppercase tracking-widest rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all w-full">
+                                View Full Service
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="5G">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Next Gen</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">5G Implementation</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">Full lifecycle rollouts for RAN, CORE, and Transport.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-tower-cell"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">5G Rollout</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                                End-to-end 5G deployment services including site acquisition, civil works, equipment installation, and commissioning.
+                            </p>
+                            <ul class="text-sm text-slate-400 space-y-2 mb-6">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> Massive MIMO</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> Network Slicing</li>
+                            </ul>
+                            <a href="telecom-5g.html" class="mt-auto inline-flex items-center justify-center px-6 py-3 border border-white/20 text-xs font-bold uppercase tracking-widest rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all w-full">
+                                View Full Service
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="NOC.jpg" alt="NOC" onerror="this.src='https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Operations</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">Managed NOC</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">24/7 network surveillance and fault management.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-desktop"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">NOC Services</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                                Our Network Operations Center provides round-the-clock monitoring, ensuring high availability and rapid incident response.
+                            </p>
+                            <ul class="text-sm text-slate-400 space-y-2 mb-6">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> L1/L2/L3 Support</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> Alarm Correlation</li>
+                            </ul>
+                            <a href="telecom-noc.html" class="mt-auto inline-flex items-center justify-center px-6 py-3 border border-white/20 text-xs font-bold uppercase tracking-widest rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all w-full">
+                                View Full Service
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Lab">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Testing</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">Lab Services</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">Controlled environments for testing and validation.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-flask"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">Lab Testing</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                                We provide state-of-the-art lab environments to simulate real-world conditions and validate network performance before deployment.
+                            </p>
+                            <ul class="text-sm text-slate-400 space-y-2 mb-6">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> Protocol Testing</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> Interoperability Testing</li>
+                            </ul>
+                            <a href="telecom-lab.html" class="mt-auto inline-flex items-center justify-center px-6 py-3 border border-white/20 text-xs font-bold uppercase tracking-widest rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all w-full">
+                                View Full Service
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="AI">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Intelligence</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">AI Integration</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">Embedding machine learning models for predictive automation.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-brain"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">AI Integration</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                                Leveraging artificial intelligence to automate network management, predict failures, and optimize resource allocation in real-time.
+                            </p>
+                            <ul class="text-sm text-slate-400 space-y-2 mb-6">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> Predictive Maintenance</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-500 text-xs"></i> Automated Healing</li>
+                            </ul>
+                            <a href="telecom-ai.html" class="mt-auto inline-flex items-center justify-center px-6 py-3 border border-white/20 text-xs font-bold uppercase tracking-widest rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all w-full">
+                                View Full Service
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900 text-white pt-24 pb-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+                <div class="col-span-1 md:col-span-1">
+                  <a href="index.html" class="flex items-center group">
+  <div class="bg-white/90 backdrop-blur rounded-xl px-2 py-1 shadow-lg">
+    <img src="images/logo.png" alt="Austin1.ai logo" class="h-10 w-auto">
+  </div>
+</a>
+
+                    <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                        Orchestrating the AI-Native Future for the modern enterprise.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fa-brands fa-linkedin text-xl"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fa-brands fa-twitter text-xl"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-widest mb-6 text-slate-500">Solutions</h4>
+                    <ul class="space-y-4 text-sm font-medium">
+                        <li><a href="telecom-services.html" class="hover:text-cyan-400 transition-colors">Infra for AI</a></li>
+                        <li><a href="it-services.html" class="hover:text-cyan-400 transition-colors">Digital for AI</a></li>
+                        <li><a href="team-enablement.html" class="hover:text-cyan-400 transition-colors">People for AI</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-widest mb-6 text-slate-500">Company</h4>
+                    <ul class="space-y-4 text-sm font-medium">
+                        <li><a href="about.html" class="hover:text-cyan-400 transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-cyan-400 transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-cyan-400 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-widest mb-6 text-slate-500">Stay Connected</h4>
+                    <form class="flex flex-col gap-4">
+                        <input type="email" placeholder="Email Address" class="bg-slate-800 border border-slate-700 text-white px-4 py-3 focus:outline-none focus:border-cyan-500 transition-colors">
+                        <button class="bg-white text-slate-900 px-4 py-3 font-bold uppercase tracking-widest hover:bg-cyan-500 hover:text-white transition-colors">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+                <p>&copy; 2025 Austin1.ai Inc. All rights reserved.</p>
+                <div class="flex space-x-8">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Use</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Flip Card Functionality ---
+        function flipCard(cardContainer) {
+            // Find any other flipped cards and flip them back
+            document.querySelectorAll('.card-container.flipped').forEach(flippedCard => {
+                if (flippedCard !== cardContainer) {
+                    flippedCard.classList.remove('flipped');
+                }
+            });
+            // Flip the clicked card
+            cardContainer.classList.toggle('flipped');
+        }
+        
+        // --- Mobile Menu Toggle ---
+        const btn = document.getElementById('mobile-menu-btn');
+        // Add menu logic here if expanding header
+    </script>
+    <script src="chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="chatbot.css">
+    <title>Austin1.ai | Orchestrating the AI-Native Future</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#0f172a', /* Slate 900 */
+                            primary: '#0891b2', /* Cyan 600 */
+                            accent: '#2563eb', /* Blue 600 */
+                            light: '#f8fafc', /* Slate 50 */
+                        }
+                    },
+                    animation: {
+                        'scroll': 'scroll 40s linear infinite',
+                    },
+                    keyframes: {
+                        scroll: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0891b2; }
+
+        /* Navigation Transition */
+        .nav-transparent { background: transparent; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .nav-solid { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+
+        /* --- ACCORDION STYLES (FIXED) --- */
+        .accordion-wrapper {
+            width: 100%;
+            height: 85vh;
+            display: flex;
+            overflow: hidden;
+            background: #020617;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .panel {
+            position: relative;
+            flex: 1; /* Start equal */
+            height: 100%;
+            transition: flex 0.7s cubic-bezier(0.25, 1, 0.5, 1); /* Smooth Slide */
+            overflow: hidden;
+            cursor: pointer;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            background: #000;
+        }
+
+        .panel:last-child { border-right: none; }
+
+        /* FIXED: Removed the hover flex change to prevent stuttering */
+        /* .panel:hover { flex: 1.2; } <-- REMOVED */
+
+        /* Active State */
+        .panel.active {
+            flex: 5; /* Dominate space */
+            cursor: default;
+        }
+
+        /* Video Styling */
+        .panel video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+            filter: grayscale(100%) contrast(1.1);
+            transition: all 0.7s ease;
+            transform: scale(1.1);
+        }
+
+        .panel.active video {
+            opacity: 1;
+            filter: grayscale(0%) contrast(1);
+            transform: scale(1);
+        }
+
+        .panel-overlay {
+            position: absolute;
+            inset: 0;
+            /* Gradient ensures text at top and bottom is readable */
+            background: linear-gradient(to bottom, rgba(2,6,23,0.8) 0%, rgba(2,6,23,0.2) 30%, rgba(2,6,23,0.9) 100%);
+            z-index: 10;
+            transition: opacity 0.5s ease;
+        }
+        
+        .panel.active .panel-overlay {
+            /* Lighter overlay when active so video pops */
+            background: linear-gradient(to bottom, rgba(2,6,23,0) 0%, rgba(2,6,23,0.1) 50%, rgba(2,6,23,0.9) 100%);
+        }
+
+        /* Neon Accent Line */
+        .panel-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            z-index: 20;
+            transition: all 0.5s ease;
+        }
+
+        .panel.active .panel-border.cyan { background: #22d3ee; box-shadow: 0 0 15px #22d3ee; }
+        .panel.active .panel-border.blue { background: #3b82f6; box-shadow: 0 0 15px #3b82f6; }
+        .panel.active .panel-border.purple { background: #a855f7; box-shadow: 0 0 15px #a855f7; }
+
+        /* --- FIXED: HORIZONTAL TOP LABEL --- */
+        .top-label {
+            position: absolute;
+            top: 3rem;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 50;
+            
+            /* Horizontal Text Logic */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.4s ease 0.1s; /* Slight delay to let panel close before text appears */
+            pointer-events: none; /* Allows hover through text */
+        }
+
+        .top-label-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            line-height: 1.2;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.9);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            
+            /* Ensure words stack nicely */
+            display: block;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+
+        .top-label-icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Hide label when active */
+        .panel.active .top-label {
+            opacity: 0;
+            transform: translateY(-20px);
+            transition-delay: 0s;
+        }
+
+        /* Content Area (Active State) */
+        .panel-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 4rem;
+            z-index: 30;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease 0.2s;
+        }
+
+        .panel.active .panel-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .accordion-wrapper { flex-direction: column; height: 100vh; padding-top: 80px; }
+            .panel { width: 100%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+            
+            /* Mobile Label */
+            .top-label { 
+                flex-direction: row; 
+                top: auto; 
+                bottom: 2rem; 
+                left: 2rem; 
+                width: auto; 
+                align-items: center; 
+                gap: 1rem;
+            }
+            .top-label-icon { margin-bottom: 0; }
+            .top-label-text { text-align: left; }
+            
+            .panel.active { flex: 4; }
+            .panel-content { padding: 1.5rem; }
+        }
+    </style>
+    <link rel="stylesheet" href="chatbot.css">
+<script src="chatbot.js" defer></script>
+
+</head>
+<body class="font-sans text-slate-700 antialiased bg-brand-dark selection:bg-cyan-500 selection:text-white">
+
+    <header id="navbar" class="fixed w-full top-0 z-50 nav-transparent transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-24">
+               <a href="index.html" class="flex items-center group">
+  <div class="bg-white/90 backdrop-blur rounded-xl px-2 py-1 shadow-lg group-hover:shadow-cyan-500/30 transition-all">
+    <img src="images/logo.png" alt="Austin1.ai logo" class="h-10 w-auto">
+  </div>
+</a>
+
+
+                <nav class="hidden md:flex space-x-10 items-center">
+                    <a href="index.html" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest text-shadow-sm">Home</a>
+                    <a href="#solutions" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest text-shadow-sm">Solutions</a>
+                    <a href="#platform" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest text-shadow-sm">Platform</a>
+                    <a href="#resources" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest text-shadow-sm">News</a>
+                    <a href="about.html" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest text-shadow-sm">Company</a>
+                </nav>
+
+                <div class="hidden md:flex items-center">
+  <a href="contact.html"
+     class="inline-flex items-center justify-center px-6 py-2 border border-white/30 text-white font-semibold rounded-md hover:bg-white/10 transition">
+    CONTACT US
+  </a>
+</div>
+
+
+                <button id="mobile-menu-btn" class="md:hidden text-white text-2xl">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="fixed inset-0 bg-slate-900 z-40 hidden flex flex-col justify-center items-center space-y-8">
+            <button id="close-menu-btn" class="absolute top-8 right-8 text-white text-3xl"><i class="fa-solid fa-xmark"></i></button>
+            <a href="index.html" class="text-2xl text-white font-display font-bold">Home</a>
+            <a href="#solutions" class="text-2xl text-white font-display font-bold">Solutions</a>
+            <a href="#platform" class="text-2xl text-white font-display font-bold">Platform</a>
+            <a href="#resources" class="text-2xl text-white font-display font-bold">News</a>
+            <a href="about.html" class="text-2xl text-white font-display font-bold">Company</a>
+            <a href="#contact" class="px-8 py-3 bg-cyan-600 text-white rounded-full">Contact Us</a>
+        </div>
+    </header>
+
+<section class="w-full bg-slate-900 relative">
+        <div class="accordion-wrapper">
+            
+            <div class="panel active" onmouseenter="expandPanel(this)">
+                <div class="panel-border cyan"></div>
+                <video muted loop playsinline poster="https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80">
+                    <source src="dc.mp4" type="video/mp4">
+                </video>
+                <div class="panel-overlay"></div>
+                
+                <div class="top-label" style="top: 40%; transform: translateY(-50%);">
+                    <div class="top-label-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    <div class="top-label-text">
+                        INFRA<br>FOR<br>AI
+                    </div>
+                </div>
+
+                <div class="panel-content">
+                    <div class="max-w-2xl">
+                        <div class="text-cyan-400 font-bold uppercase tracking-[0.2em] text-xs mb-3 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-cyan-400"></span> Infra For AI
+                        </div>
+                        <h2 class="font-display text-5xl md:text-8xl font-bold text-white mb-6 leading-none drop-shadow-xl">
+                            Infra for <span class="text-cyan-400">AI</span>
+                        </h2>
+                        <p class="text-slate-300 text-xl leading-relaxed mb-8 border-l-2 border-cyan-500/30 pl-4">
+                            Constructing the critical physical environment where AI lives. From hyperscale datacenter management to last-mile telecom engineering.
+                        </p>
+                        <a href="#solutions" class="group inline-flex items-center gap-2 text-white font-bold uppercase tracking-widest text-sm hover:text-cyan-400 transition-colors">
+                            Explore Solutions 
+                            <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" onmouseenter="expandPanel(this)">
+                <div class="panel-border blue"></div>
+                <video muted loop playsinline poster="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80">
+                    <source src="video2.mp4" type="video/mp4">
+                </video>
+                <div class="panel-overlay"></div>
+
+                <div class="top-label" style="top: 40%; transform: translateY(-50%);">
+                    <div class="top-label-icon"><i class="fa-solid fa-users"></i></div>
+                    <div class="top-label-text">
+                        People<br>For<br>AI
+                    </div>
+                </div>
+
+                <div class="panel-content">
+                    <div class="max-w-2xl">
+                        <div class="text-blue-400 font-bold uppercase tracking-[0.2em] text-xs mb-3 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-400"></span> People For AI
+                        </div>
+                        <h2 class="font-display text-5xl md:text-8xl font-bold text-white mb-6 leading-none drop-shadow-xl">
+                            People for <span class="text-blue-400">AI</span>
+                        </h2>
+                        <p class="text-slate-300 text-xl leading-relaxed mb-8 border-l-2 border-blue-500/30 pl-4">
+                            Strategic talent enablement bridging the gap between human potential and artificial intelligence.
+                        </p>
+                        <a href="team-enablement.html" class="group inline-flex items-center gap-2 text-white font-bold uppercase tracking-widest text-sm hover:text-blue-400 transition-colors">
+                            Meet the Experts
+                            <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" onmouseenter="expandPanel(this)">
+                <div class="panel-border purple"></div>
+                <video muted loop playsinline poster="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80">
+                    <source src="video3.mp4" type="video/mp4">
+                </video>
+                <div class="panel-overlay"></div>
+
+                <div class="top-label" style="top: 40%; transform: translateY(-50%);">
+                    <div class="top-label-icon"><i class="fa-solid fa-code"></i></div>
+                    <div class="top-label-text">
+                        Digital<br>For<br>AI
+                    </div>
+                </div>
+
+                <div class="panel-content">
+                    <div class="max-w-2xl">
+                        <div class="text-purple-400 font-bold uppercase tracking-[0.2em] text-xs mb-3 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-purple-400"></span> DIGITAL FOR AI
+                        </div>
+                        <h2 class="font-display text-5xl md:text-8xl font-bold text-white mb-6 leading-none drop-shadow-xl">
+                            Digital for <span class="text-purple-400">AI</span>
+                        </h2>
+                        <p class="text-slate-300 text-xl leading-relaxed mb-8 border-l-2 border-purple-500/30 pl-4">
+                            Accelerating evolution through migration strategies and automation designed specifically for AI infrastructure.
+                        </p>
+                        <a href="it-services.html" class="group inline-flex items-center gap-2 text-white font-bold uppercase tracking-widest text-sm hover:text-purple-400 transition-colors">
+                            See Capabilities
+                            <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="bg-slate-900 border-b border-slate-800 py-10 overflow-hidden relative z-40">
+        <div class="max-w-7xl mx-auto px-4 mb-6">
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">Trusted by Global Leaders</p>
+        </div>
+        <div class="relative w-full overflow-hidden">
+            <div class="flex animate-scroll whitespace-nowrap gap-24 items-center pl-4">
+
+  <div class="flex animate-scroll whitespace-nowrap gap-24 items-center pl-4">
+
+  <div class="text-2xl font-bold text-slate-200">AT&T</div>
+  <div class="text-2xl font-bold text-yellow-300">Sprint</div>
+  <div class="text-2xl font-bold text-red-500">Verizon</div>
+  <div class="text-2xl font-bold text-pink-400">T-Mobile</div>
+
+  <div class="text-2xl font-bold text-red-500">RogSers</div>
+  <div class="text-2xl font-bold text-red-600">Vodafone</div>
+  <div class="text-2xl font-bold text-blue-400">Ericsson</div>
+  <div class="text-2xl font-bold text-orange-400">Amdocs</div>
+  <div class="text-2xl font-bold text-cyan-300">Nokia</div>
+
+  <div class="text-2xl font-bold text-red-400">Boingo</div>
+  <div class="text-2xl font-bold text-blue-300">Samsung</div>
+  <div class="text-2xl font-bold text-sky-300">Accenture</div>
+  <div class="text-2xl font-bold text-red-500">Airtel</div>
+  <div class="text-2xl font-bold text-slate-300">SAC Wireless</div>
+  <div class="text-2xl font-bold text-white">UST</div>
+
+  <!-- Repeat once more for smooth infinite scroll -->
+  <div class="text-2xl font-bold text-slate-200">AT&T</div>
+  <div class="text-2xl font-bold text-yellow-300">Sprint</div>
+  <div class="text-2xl font-bold text-red-500">Verizon</div>
+  <div class="text-2xl font-bold text-pink-400">T-Mobile</div>
+
+  <div class="text-2xl font-bold text-red-500">Rogers</div>
+  <div class="text-2xl font-bold text-red-600">Vodafone</div>
+  <div class="text-2xl font-bold text-blue-400">Ericsson</div>
+  <div class="text-2xl font-bold text-orange-400">Amdocs</div>
+  <div class="text-2xl font-bold text-cyan-300">Nokia</div>
+
+  <div class="text-2xl font-bold text-red-400">Boingo</div>
+  <div class="text-2xl font-bold text-blue-300">Samsung</div>
+  <div class="text-2xl font-bold text-sky-300">Accenture</div>
+  <div class="text-2xl font-bold text-red-500">Airtel</div>
+  <div class="text-2xl font-bold text-slate-300">SAC Wireless</div>
+  <div class="text-2xl font-bold text-white">UST</div>
+
+</div>
+
+
+  <!-- Repeat same list again for smooth infinite scroll -->
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">AT&amp;T</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">Sprint</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">Verizon</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">Dish Wireless</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">T-Mobile</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">Rogers</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">Vodafone</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">Ericsson</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">Amdocs</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">Nokia</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">Boingo</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">Samsung</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">Accenture</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">Airtel</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">SAC Wireless</div>
+  <div class="text-slate-400 text-2xl font-bold opacity-50 hover:opacity-100 hover:text-white transition-all duration-300 cursor-pointer">UST</div>
+
+</div>
+
+        </div>
+    </div>
+
+    <section class="relative py-24 overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1558494949-ef526b0042a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
+                 alt="Infrastructure Background" 
+                 class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-slate-900/80 mix-blend-multiply"></div>
+            <div class="absolute inset-0 bg-blue-900/40 mix-blend-overlay"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center mb-16 max-w-3xl mx-auto">
+                <h2 class="font-display text-4xl md:text-5xl font-bold text-white mb-6">Ready for your growth.</h2>
+                <p class="text-lg text-slate-300 font-light leading-relaxed">
+                    TRANSFORM YOUR NETWORK -UNLOCK TIME & COST SAVINGS AND BOOST EFFICIENCY WITH OUR CUTTING-EDGE IP, AUTOMATION, AND WORLD-CLASS NETWORK SERVICES!
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+
+                
+                <div class="bg-slate-900/95 p-8 relative group border border-white/5 hover:border-cyan-500/30 transition-all duration-300">
+                    <div class="absolute top-6 right-6 text-slate-600 text-3xl group-hover:text-cyan-500 transition-colors">
+                        <i class="fa-solid fa-earth-americas"></i>
+                    </div>
+                    <div class="font-display text-7xl font-bold text-cyan-400 mb-2">2010</div>
+                    <div class="text-white font-bold uppercase tracking-widest text-sm">YEAR ESTABLISHED</div>
+                </div>
+
+                <div class="bg-slate-900/95 p-8 relative group border border-white/5 hover:border-cyan-500/30 transition-all duration-300">
+                    <div class="absolute top-6 right-6 text-slate-600 text-3xl group-hover:text-cyan-500 transition-colors">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <div class="font-display text-7xl font-bold text-cyan-400 mb-2">500+</div>
+                    <div class="text-white font-bold uppercase tracking-widest text-sm">Projects Completed</div>
+                </div>
+
+                <div class="bg-slate-900/95 p-8 relative group border border-white/5 hover:border-cyan-500/30 transition-all duration-300">
+                    <div class="absolute top-6 right-6 text-slate-600 text-3xl group-hover:text-cyan-500 transition-colors">
+                        <i class="fa-regular fa-building"></i>
+                    </div>
+                    <div class="font-display text-7xl font-bold text-cyan-400 mb-2">10+</div>
+                    <div class="text-white font-bold uppercase tracking-widest text-sm">FORTUNE-100 CUSTOMERS</div>
+                </div>
+
+                <div class="bg-slate-900/95 p-8 relative group border border-white/5 hover:border-cyan-500/30 transition-all duration-300">
+                    <div class="absolute top-6 right-6 text-slate-600 text-3xl group-hover:text-cyan-500 transition-colors">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div class="font-display text-7xl font-bold text-cyan-400 mb-2">03<span class="text-4xl ml-1"></span></div>
+                    <div class="text-white font-bold uppercase tracking-widest text-sm">GLOBAL DELIVERY CENTERS</div>
+                </div>
+
+                   
+
+               
+                   
+
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-6">
+                <a href="#solutions" class="inline-flex items-center justify-center px-8 py-4 text-sm font-bold uppercase tracking-widest rounded-sm text-slate-900 bg-amber-400 hover:bg-amber-300 transition-all shadow-lg hover:shadow-amber-400/50">
+                    See Our Features
+                </a>
+                <a href="about.html" class="inline-flex items-center justify-center px-8 py-4 text-sm font-bold uppercase tracking-widest rounded-sm text-amber-400 border border-amber-400 hover:bg-amber-400 hover:text-slate-900 transition-all">
+                    Explore Locations
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="relative py-24 bg-white overflow-hidden relative z-40">
+        
+        <div class="absolute inset-0 z-0 pointer-events-none">
+            <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
+                 alt="Office Background" 
+                 class="w-full h-full object-cover opacity-[0.03]"> </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center mb-20 max-w-3xl mx-auto">
+                <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-6">Reasons to choose Austin1.ai</h2>
+                <p class="text-lg text-slate-500 font-light leading-relaxed">
+                    We design, develop, and operate some of the world's most flexible and scalable AI-native infrastructures.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-16">
+                
+                <div class="flex items-start group">
+                    <div class="flex-shrink-0 mr-6">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center text-4xl text-cyan-600 group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3">Short and Long-Term Contracts</h3>
+                        <p class="text-slate-600 leading-relaxed">
+                            Seamlessly augment your in-house team on either a temporary or permanent basis through our flexible model. Whether your project is short-term or long-term, we offer tailored solutions to meet all your requirements.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start group">
+                    <div class="flex-shrink-0 mr-6">
+                        <i class="fa-solid fa-stopwatch text-4xl text-cyan-600 group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3">Fast and Easy Hiring</h3>
+                        <p class="text-slate-600 leading-relaxed">
+                            Our hiring process is transparent and streamlined from project initiation through to its successful completion. AUSTIN1.AI will cover hiring, onboarding, replacements, communications, and paperwork.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start group">
+                    <div class="flex-shrink-0 mr-6">
+                        <i class="fa-solid fa-sliders text-4xl text-cyan-600 group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3">Transparent Pricing</h3>
+                        <p class="text-slate-600 leading-relaxed">
+                           No hidden fees. You only pay a monthly salary for each hired candidate according to their hourly rates.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start group">
+                    <div class="flex-shrink-0 mr-6">
+                        <i class="fa-solid fa-recycle text-4xl text-cyan-600 group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3">Free Replacement</h3>
+                        <p class="text-slate-600 leading-relaxed">
+                            Ensure seamless project progress with the option to replace any team member to better align with your evolving needs, all at no extra cost.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start group">
+                    <div class="flex-shrink-0 mr-6">
+                        <i class="fa-solid fa-building-columns text-4xl text-cyan-600 group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3">Direct Communication</h3>
+                        <p class="text-slate-600 leading-relaxed">
+                          Enjoy direct communication with your extended team without intermediaries. Schedule calls, standups, and meetings at your convenience – just as you would onsite.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start group">
+                    <div class="flex-shrink-0 mr-6">
+                        <i class="fa-solid fa-ribbon text-4xl text-cyan-600 group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3">Dedicated Account Manager</h3>
+                        <p class="text-slate-600 leading-relaxed">
+                            AUSTIN1.AI ensures seamless communication by assigning you a dedicated account manager to facilitate interactions with both candidates and hired personnel.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="text-center mt-20">
+                <a href="about.html" class="inline-flex items-center justify-center px-10 py-4 text-sm font-bold uppercase tracking-widest rounded-sm text-slate-900 bg-amber-400 hover:bg-amber-300 transition-all shadow-lg hover:shadow-amber-400/50">
+                    Discover Our Vision
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+<style>
+    .cine-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 2px; /* Tiny gap for the "grid line" look */
+        background: rgba(255,255,255,0.1); /* The gap color */
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    @media(min-width: 1024px) { .cine-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .cine-card {
+        background: #0f172a;
+        height: 500px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 3rem;
+    }
+
+    .cine-bg {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        opacity: 0.4;
+        transition: transform 0.7s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.5s ease;
+        transform: scale(1.1);
+        filter: grayscale(100%);
+    }
+
+    .cine-card:hover .cine-bg {
+        transform: scale(1);
+        opacity: 0.6;
+        filter: grayscale(0%);
+    }
+
+    .cine-content {
+        position: relative;
+        z-index: 10;
+        transform: translateY(0);
+        transition: transform 0.5s ease;
+    }
+
+    .cine-card:hover .cine-content {
+        transform: translateY(-10px);
+    }
+
+    .cine-line {
+        width: 0;
+        height: 2px;
+        background: #22d3ee;
+        margin-top: 1.5rem;
+        transition: width 0.5s ease;
+    }
+
+    .cine-card:hover .cine-line {
+        width: 100%;
+    }
+</style>
+
+<section id="solutions" class="py-32 bg-slate-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-4xl font-display font-bold text-white mb-12">Expertise</h2>
+        
+        <div class="cine-grid">
+            
+            <a href="telecom.html" class="cine-card group">
+                <div class="cine-bg" style="background-image: url('https://images.unsplash.com/photo-1562408590-e32931084e23?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent"></div>
+                
+                <div class="cine-content">
+                    <div class="text-slate-400 font-mono text-xs mb-2">01 / INFRA</div>
+                    <h3 class="text-3xl font-bold text-white leading-tight">Infra for AI</h3>
+                    <div class="cine-line"></div>
+                </div>
+            </a>
+
+            <a href="it_service.html" class="cine-card group">
+                <div class="cine-bg" style="background-image: url('https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent"></div>
+                
+                <div class="cine-content">
+                    <div class="text-slate-400 font-mono text-xs mb-2">02 / OPS</div>
+                    <h3 class="text-3xl font-bold text-white leading-tight">Digital for AI</h3>
+                    <div class="cine-line"></div>
+                </div>
+            </a>
+
+            <a href="team_enablement.html" class="cine-card group">
+                <div class="cine-bg" style="background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent"></div>
+                
+                <div class="cine-content">
+                    <div class="text-slate-400 font-mono text-xs mb-2">03 / PEOPLE</div>
+                    <h3 class="text-3xl font-bold text-white leading-tight">People for AI</h3>
+                    <div class="cine-line"></div>
+                </div>
+            </a>
+
+        </div>
+    </div>
+</section>
+
+<script>
+    function showPreview(index) {
+        // 1. Handle List Styles
+        const items = document.querySelectorAll('.console-item');
+        items.forEach(item => item.classList.remove('active'));
+        items[index].classList.add('active');
+
+        // 2. Handle Images
+        const images = document.querySelectorAll('.preview-image');
+        images.forEach(img => img.classList.remove('active'));
+        document.getElementById(`img-${index}`).classList.add('active');
+    }
+</script>
+
+    <section id="platform" class="py-32 bg-slate-50 relative z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row items-center gap-20">
+                <div class="lg:w-1/2">
+                    <span class="inline-block py-1 px-3 border border-slate-300 rounded-full text-xs font-bold uppercase tracking-widest text-slate-500 mb-6">Our Methodology</span>
+                    <h2 class="font-display text-4xl md:text-6xl font-bold text-slate-900 leading-tight mb-8">
+                        Built for Scale. <br>
+                        <span class="text-cyan-600">Designed for Intelligence.</span>
+                    </h2>
+                    <p class="text-xl text-slate-600 leading-relaxed mb-8">
+                        Austin1.ai bridges the gap between legacy infrastructure and the AI-native future. We don't just layer AI on top; we integrate it into the fabric of your network operations.
+                    </p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-cyan-100 flex items-center justify-center mt-1">
+                                <i class="fa-solid fa-bolt text-cyan-600 text-xs"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-bold text-slate-900">Real-time Edge Processing</h4>
+                                <p class="text-slate-500">Low latency decision making where data is created.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-cyan-100 flex items-center justify-center mt-1">
+                                <i class="fa-solid fa-brain text-cyan-600 text-xs"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-bold text-slate-900">Automated Pipelines</h4>
+                                <p class="text-slate-500">Self-healing networks and proactive resource allocation.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-12">
+                        <a href="#" class="inline-block bg-slate-900 text-white px-8 py-4 font-bold uppercase tracking-widest hover:bg-cyan-600 transition-colors">
+                            Explore the Platform
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="lg:w-1/2 relative">
+                    <div class="relative w-full aspect-square bg-slate-900 overflow-hidden">
+                        <div class="absolute inset-0 opacity-60">
+                            <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                <path d="M0 100 L100 0 L100 100 Z" fill="#0891b2" />
+                            </svg>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Tech" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50">
+                        <div class="absolute bottom-8 left-8 right-8 text-white">
+                            <div class="text-6xl font-display font-bold mb-2">4ms</div>
+                            <div class="text-sm uppercase tracking-widest opacity-80">Global Latency Target</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="resources" class="py-32 bg-white relative z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-end mb-16 border-b border-slate-200 pb-8">
+                <div>
+                    <h2 class="font-display text-4xl font-bold text-slate-900">Latest Insights</h2>
+                </div>
+                <a href="#" class="hidden md:inline-flex items-center text-slate-900 font-bold uppercase tracking-widest hover:text-cyan-600 transition-colors">
+                    View Newsroom <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <article class="group cursor-pointer">
+                    <div class="overflow-hidden mb-6 aspect-[4/3] bg-slate-100">
+                        <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="AI" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    </div>
+                    <div class="text-cyan-600 text-xs font-bold uppercase tracking-widest mb-3">White Paper</div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-4 group-hover:text-cyan-600 transition-colors">Autonomous Networks in 2025: The Shift to Zero-Touch</h3>
+                    <a href="#" class="inline-flex items-center text-slate-900 font-bold uppercase text-sm tracking-wider mt-2 group-hover:underline">Read Article</a>
+                </article>
+
+                <article class="group cursor-pointer">
+                    <div class="overflow-hidden mb-6 aspect-[4/3] bg-slate-100">
+                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Data" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    </div>
+                    <div class="text-cyan-600 text-xs font-bold uppercase tracking-widest mb-3">Case Study</div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-4 group-hover:text-cyan-600 transition-colors">Scaling Data Pipelines: How Logistics Co Reduced Latency by 40%</h3>
+                    <a href="#" class="inline-flex items-center text-slate-900 font-bold uppercase text-sm tracking-wider mt-2 group-hover:underline">Read Article</a>
+                </article>
+
+                <article class="group cursor-pointer">
+                    <div class="overflow-hidden mb-6 aspect-[4/3] bg-slate-100">
+                        <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Security" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    </div>
+                    <div class="text-cyan-600 text-xs font-bold uppercase tracking-widest mb-3">Industry News</div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-4 group-hover:text-cyan-600 transition-colors">Security in the Age of GenAI: New Vectors of Attack</h3>
+                    <a href="#" class="inline-flex items-center text-slate-900 font-bold uppercase text-sm tracking-wider mt-2 group-hover:underline">Read Article</a>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact" class="bg-slate-900 text-white pt-24 pb-12 border-t border-slate-800 relative z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+                <div class="col-span-1 md:col-span-1">
+                   <a href="index.html" class="inline-flex items-center mb-6">
+  <div class="bg-white/90 backdrop-blur rounded-xl px-2 py-1 shadow-lg">
+    <img src="images/logo.png" alt="Austin1.ai logo" class="h-8 w-auto">
+  </div>
+</a>
+
+                    <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                        Orchestrating the AI-Native Future for the modern enterprise.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fa-brands fa-linkedin text-xl"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fa-brands fa-twitter text-xl"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fa-brands fa-github text-xl"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-widest mb-6 text-slate-500">Solutions</h4>
+                    <ul class="space-y-4 text-sm font-medium">
+                        <li><a href="telecom.html" class="hover:text-cyan-400 transition-colors">Infra for AI</a></li>
+                        <li><a href="it_service.html" class="hover:text-cyan-400 transition-colors">Digital for AI</a></li>
+                        <li><a href="team_enablement.html" class="hover:text-cyan-400 transition-colors">People for AI</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-widest mb-6 text-slate-500">Company</h4>
+                    <ul class="space-y-4 text-sm font-medium">
+                        <li><a href="about.html" class="hover:text-cyan-400 transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-cyan-400 transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-cyan-400 transition-colors">Partners</a></li>
+                        <li><a href="#" class="hover:text-cyan-400 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-widest mb-6 text-slate-500">Stay Connected</h4>
+                    <form class="flex flex-col gap-4">
+                        <input type="email" placeholder="Email Address" class="bg-slate-800 border border-slate-700 text-white px-4 py-3 focus:outline-none focus:border-cyan-500 transition-colors">
+                        <button class="bg-white text-slate-900 px-4 py-3 font-bold uppercase tracking-widest hover:bg-cyan-500 hover:text-white transition-colors">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+                <p>&copy; 2025 Austin1.ai Inc. All rights reserved.</p>
+                <div class="flex space-x-8">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Use</a>
+                    <a href="#" class="hover:text-white transition-colors">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Navbar Transition ---
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.remove('nav-transparent');
+                navbar.classList.add('nav-solid');
+            } else {
+                navbar.classList.add('nav-transparent');
+                navbar.classList.remove('nav-solid');
+            }
+        });
+
+        // --- Mobile Menu Toggle ---
+        const btn = document.getElementById('mobile-menu-btn');
+        const closeBtn = document.getElementById('close-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        const menuLinks = menu.querySelectorAll('a');
+
+        function toggleMenu() {
+            menu.classList.toggle('hidden');
+            document.body.classList.toggle('overflow-hidden');
+        }
+
+        btn.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+        menuLinks.forEach(link => link.addEventListener('click', toggleMenu));
+
+        // --- ACCORDION LOGIC ---
+        function expandPanel(element) {
+            // Check if element is already active
+            if (element.classList.contains('active')) return;
+
+            // Remove active class from all panels
+            document.querySelectorAll('.panel').forEach(p => {
+                p.classList.remove('active');
+                const video = p.querySelector('video');
+                // Immediately pause background videos
+                if(video) {
+                    video.pause();
+                    video.currentTime = 0; // Optional: Reset video
+                }
+            });
+
+            // Add active class to hovered panel
+            element.classList.add('active');
+            
+            // Play the video in the hovered panel
+            const video = element.querySelector('video');
+            if (video) {
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        // console.log("Hover play prevented");
+                    });
+                }
+            }
+        }
+        
+        // Initialize first video on load
+        window.addEventListener('load', () => {
+            const firstPanel = document.querySelector('.panel.active');
+            if(firstPanel) {
+                const firstVideo = firstPanel.querySelector('video');
+                if(firstVideo) firstVideo.play();
+            }
+        });
+
+    </script>
+   
+</body>
+</html>

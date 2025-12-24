@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us | Austin1.ai</title>
+
+  <!-- Fonts (match your site style) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Inter", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Arial", "sans-serif"],
+            display: ["Space Grotesk", "Inter", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Arial", "sans-serif"],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chatbot (optional if you want here too) -->
+  <link rel="stylesheet" href="chatbot.css" />
+</head>
+<body class="font-sans text-slate-700 antialiased bg-slate-50">
+
+  <!-- NAVBAR -->
+    <!-- NAVBAR -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-slate-950/90 backdrop-blur border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="h-16 flex items-center justify-between">
+
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center">
+          <div class="bg-white/90 rounded-xl px-2 py-1 shadow-lg">
+            <img src="images/logo.png" alt="Austin1.ai logo" class="h-10 w-auto">
+          </div>
+        </a>
+
+        <!-- Links -->
+        <nav class="hidden md:flex items-center gap-8 text-sm font-semibold tracking-wide text-slate-200">
+          <a href="index.html" class="hover:text-white">HOME</a>
+          <a href="telecom.html" class="hover:text-white">SOLUTIONS</a>
+          <a href="it_service.html" class="hover:text-white">PLATFORM</a>
+          <a href="about.html" class="hover:text-white">COMPANY</a>
+        </nav>
+
+        <!-- Contact button -->
+        <a href="contact.html"
+           class="hidden md:inline-flex items-center justify-center px-6 py-2 border border-white/30 text-white font-semibold rounded-md hover:bg-white/10 transition">
+          CONTACT US
+        </a>
+
+      </div>
+    </div>
+  </header>
+
+  
+<section class="bg-slate-950 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <h1 class="font-display text-4xl sm:text-5xl font-bold text-white">Contact Us</h1>
+      <p class="mt-4 text-slate-300 max-w-2xl">
+        Tell us what you need — we’ll get back to you as soon as possible.
+      </p>
+    </div>
+  </section>
+
+
+
+  <!-- FORM SECTION -->
+  <section class="py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-10">
+
+        <form id="contactForm" class="space-y-6">
+          <!-- Name -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Name</label>
+            <input type="text" name="name" required
+                   class="w-full rounded-lg border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+          </div>
+
+          <!-- Phone -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
+            <input type="tel" name="phone"
+                   class="w-full rounded-lg border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">E-Mail Address</label>
+            <input type="email" name="email" required
+                   class="w-full rounded-lg border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+          </div>
+
+          <!-- Organization -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Name of the Organisation</label>
+            <input type="text" name="org"
+                   class="w-full rounded-lg border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+          </div>
+
+          <!-- Service Type -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Service Type</label>
+            <select name="serviceType"
+                    class="w-full rounded-lg border border-emerald-400 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+              <option value="">-- Select --</option>
+
+              <optgroup label="Telecom and Technology">
+                <option>OpenRAN Solutions</option>
+                <option>End to End Inbuilding Solution</option>
+                <option>Network Design and Deployment</option>
+                <option>Network Optimization and Performance Enhancement</option>
+                <option>5G RAN, CORE and Transport Implementation and Integration</option>
+                <option>Program & Project Management</option>
+                <option>Managed NOC services</option>
+                <option>Lab Services</option>
+                <option>AI Integration in Telecom</option>
+              </optgroup>
+
+              <optgroup label="IT Services">
+                <option>Backup and Disaster recovery</option>
+                <option>Data Insights and AI</option>
+                <option>Cloud Solutions</option>
+                <option>Cyber Security</option>
+                <option>Managed IT Services</option>
+                <option>Transformational services</option>
+                <option>VoIP</option>
+                <option>End user support</option>
+                <option>Cloud administration</option>
+                <option>Network Consulting</option>
+                <option>CyberSecurity and Compliance</option>
+                <option>IT Helpdesk Services</option>
+              </optgroup>
+
+              <optgroup label="Team Enablement">
+                <option>Engagement Model</option>
+                <option>Delivering the right talent with enriched hiring AI platform</option>
+                <option>Customized training program to meet specific industry demands</option>
+                <option>Number of Years Experience</option>
+                <option>Field Proven Qualification and Selection Process</option>
+                <option>High Customer Satisfaction</option>
+                <option>Why AUSTIN1.AI</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <!-- Message -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Message</label>
+            <textarea name="message" rows="5"
+                      class="w-full rounded-lg border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-400"></textarea>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit"
+                  class="w-full rounded-full bg-emerald-500 text-white font-semibold py-3 hover:bg-emerald-600 transition">
+            Submit
+          </button>
+
+          <div class="text-center text-slate-500 font-semibold">OR</div>
+
+          <p class="text-center text-slate-700">
+            Mail us your query at
+            <a class="text-emerald-600 font-semibold hover:underline" href="mailto:info@austin1.ai">info@austin1.ai</a>
+          </p>
+        </form>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Chatbot JS (optional if
+  <!-- Chatbot JS -->
+  <script src="chatbot.js"></script>
+
+  <script>
+    // Prevent real submit (optional)
+    document.getElementById("contactForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      alert("Thanks! Your message has been captured. (Form sending can be connected next.)");
+      this.reset();
+    });
+  </script>
+
+</body>
+</html>

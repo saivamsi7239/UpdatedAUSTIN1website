@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Services | Austin1.ai</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="chatbot.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#020617', 
+                            primary: '#0891b2', 
+                            accent: '#2563eb',
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0891b2; }
+
+        /* Navigation */
+        .glass-nav {
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- 3D FLIP CARD STYLES --- */
+        .card-container {
+            perspective: 1200px;
+            height: 420px; 
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+
+        .card-container.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        /* FRONT & BACK Shared */
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* FRONT DESIGN */
+        .card-front {
+            background: #0f172a; 
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            padding: 0; /* Full Bleed Image */
+            text-align: center;
+        }
+
+        .card-container:hover .card-front {
+            border-color: rgba(34, 211, 238, 0.5); 
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.15);
+        }
+
+        /* Image Half */
+        .card-image-wrap {
+            height: 55%;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-image-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s ease;
+            filter: grayscale(100%);
+        }
+
+        .card-container:hover .card-image-wrap img {
+            transform: scale(1.1);
+            filter: grayscale(0%);
+        }
+
+        .card-image-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 0%, #0f172a 100%);
+        }
+
+        /* Content Half */
+        .card-front-content {
+            height: 45%;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+            width: 100%;
+            align-items: center;
+        }
+
+        .card-bar {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 4px;
+            background: #334155;
+            border-radius: 2px;
+            transition: all 0.4s ease;
+        }
+
+        .card-container:hover .card-bar {
+            background: #22d3ee;
+            width: 80%;
+            box-shadow: 0 0 10px #22d3ee;
+        }
+
+        /* BACK DESIGN */
+        .card-back {
+            background: #1e293b; 
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+            text-align: left;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+        }
+
+        .card-back::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: #22d3ee;
+            box-shadow: 0 0 10px #22d3ee;
+        }
+
+        .card-icon-back {
+            width: 50px;
+            height: 50px;
+            background: rgba(34, 211, 238, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #22d3ee;
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            margin-bottom: 1.5rem;
+        }
+
+    </style>
+</head>
+<body class="font-sans text-slate-600 antialiased bg-slate-50 selection:bg-cyan-500 selection:text-white">
+
+    <header class="fixed w-full top-0 z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-24">
+              <a href="index.html" class="flex items-center group">
+  <div class="bg-white/90 backdrop-blur rounded-xl px-2 py-1 shadow-lg">
+    <img src="images/logo.png" alt="Austin1.ai logo" class="h-10 w-auto">
+  </div>
+</a>
+
+                <nav class="hidden md:flex space-x-10 items-center">
+                    <a href="index.html" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest">Home</a>
+                    <a href="index.html#solutions" class="text-sm font-medium text-white transition-colors uppercase tracking-widest border-b border-cyan-500">Solutions</a>
+                    <a href="index.html#platform" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest">Platform</a>
+                    <a href="index.html#resources" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest">Insights</a>
+                    <a href="about.html" class="text-sm font-medium text-slate-300 hover:text-white transition-colors uppercase tracking-widest">Company</a>
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <a href="contact.html"
+   class="inline-flex items-center justify-center px-6 py-2 border border-white/30 text-white font-semibold rounded-md hover:bg-white/10 transition">
+  CONTACT US
+</a>
+
+                    <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="relative h-[60vh] flex items-center bg-slate-900 overflow-hidden border-b border-slate-800">
+        <div class="absolute inset-0 z-0">
+            <video autoplay loop muted playsinline class="w-full h-full object-cover opacity-30">
+                <source src="dc.mp4" type="video/mp4">
+            </video>
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full pt-20">
+            <div class="max-w-4xl animate-fade-in-up">
+                <span class="inline-flex items-center gap-2 py-1 px-3 rounded-full border border-cyan-500/30 bg-cyan-950/30 text-cyan-300 text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-md">
+                    <i class="fa-solid fa-flask"></i> Testing & Development
+                </span>
+                
+                <h1 class="font-display text-5xl md:text-7xl font-bold text-white tracking-tight leading-tight mb-6">
+                    AI-Enabled <br />
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Lab Services</span>
+                </h1>
+                
+                <p class="text-xl text-slate-300 font-light leading-relaxed max-w-2xl border-l-2 border-cyan-500 pl-6">
+                    Comprehensive Lab Setup, Support, and Device Testing solutions designed to accelerate your development lifecycle.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 bg-slate-50 relative">
+        <div class="absolute inset-0 pointer-events-none" 
+             style="background-image: linear-gradient(#cbd5e1 1px, transparent 1px), linear-gradient(90deg, #cbd5e1 1px, transparent 1px); background-size: 40px 40px; opacity: 0.7;">
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="font-display text-3xl md:text-5xl font-bold text-slate-900 mb-6">Lab Solutions Ecosystem</h2>
+                <p class="text-lg text-slate-500 max-w-2xl mx-auto">From tailored infrastructure to comprehensive device testing and support.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="lab.webp" alt="Lab Setup">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Infrastructure</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">Lab Setup</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">Tailored environments for specific testing needs.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-server"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">Tailored Infrastructure</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                                Design and deploy customized lab environments equipped with cutting-edge tools to meet your specific testing requirements.
+                            </p>
+                            <a href="#" class="mt-auto inline-flex items-center justify-center px-6 py-3 border border-white/20 text-xs font-bold uppercase tracking-widest rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all w-full">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Support">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Operations</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">Technical Support</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">Prompt assistance and proactive maintenance.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-headset"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">Support Services</h3>
+                            <div class="space-y-4">
+                                <div><h4 class="text-white font-bold text-sm mb-1">Response</h4><p class="text-slate-400 text-sm">Prompt technical support for seamless ops.</p></div>
+                                <div><h4 class="text-white font-bold text-sm mb-1">Maintenance</h4><p class="text-slate-400 text-sm">Proactive service to minimize downtime.</p></div>
+                            </div>
+                            <button class="mt-auto text-xs font-bold uppercase text-slate-500 hover:text-white flex items-center gap-2" onclick="event.stopPropagation(); flipCard(this.closest('.card-container'));"><i class="fa-solid fa-arrow-left"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Training">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Education</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">Training Programs</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">Enhancing user skills for lab optimization.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-chalkboard-user"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">Training Initiatives</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                                Provide training initiatives to enhance user skills and optimize the utilization of lab resources effectively.
+                            </p>
+                            <a href="#" class="mt-auto inline-flex items-center justify-center px-6 py-3 border border-white/20 text-xs font-bold uppercase tracking-widest rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all w-full">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Testing">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Validation</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">Device Testing</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">Comprehensive testing across various industries.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">Comprehensive Testing</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                                Conduct thorough device testing ensuring compliance with industry standards and regulations for reliable outcomes.
+                            </p>
+                            <a href="#" class="mt-auto inline-flex items-center justify-center px-6 py-3 border border-white/20 text-xs font-bold uppercase tracking-widest rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all w-full">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="QA">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Standards</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">Quality Assurance</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">Rigorous practices for high-performance.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-clipboard-check"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">Quality Assurance</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                                Implement rigorous QA practices to guarantee high-performance devices and consistent, reliable test results.
+                            </p>
+                            <a href="#" class="mt-auto inline-flex items-center justify-center px-6 py-3 border border-white/20 text-xs font-bold uppercase tracking-widest rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all w-full">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Tech">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Innovation</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">Advanced Tech</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">State-of-the-art setups and integration.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-microchip"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">Technology Integration</h3>
+                            <div class="space-y-4">
+                                <div><h4 class="text-white font-bold text-sm mb-1">Cutting-Edge</h4><p class="text-slate-400 text-sm">State-of-the-art infrastructure setup.</p></div>
+                                <div><h4 class="text-white font-bold text-sm mb-1">Advancement</h4><p class="text-slate-400 text-sm">Integrate latest tech to stay ahead.</p></div>
+                            </div>
+                            <button class="mt-auto text-xs font-bold uppercase text-slate-500 hover:text-white flex items-center gap-2" onclick="event.stopPropagation(); flipCard(this.closest('.card-container'));"><i class="fa-solid fa-arrow-left"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Client">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Strategy</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">Client-Centric</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">Custom solutions and verified success.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-handshake"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">Tailored Solutions</h3>
+                            <div class="space-y-4">
+                                <div><h4 class="text-white font-bold text-sm mb-1">Customization</h4><p class="text-slate-400 text-sm">Meet specific industry requirements.</p></div>
+                                <div><h4 class="text-white font-bold text-sm mb-1">Success</h4><p class="text-slate-400 text-sm">Proven track record and testimonials.</p></div>
+                            </div>
+                            <button class="mt-auto text-xs font-bold uppercase text-slate-500 hover:text-white flex items-center gap-2" onclick="event.stopPropagation(); flipCard(this.closest('.card-container'));"><i class="fa-solid fa-arrow-left"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="interactive.webp" alt="Visuals">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Experience</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">Interactive Visuals</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">Virtual tours and immersive demonstrations.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-vr-cardboard"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">Virtual Access</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                                Offer virtual tours and engaging videos demonstrating device testing processes, providing an immersive look at our facilities.
+                            </p>
+                            <a href="#" class="mt-auto inline-flex items-center justify-center px-6 py-3 border border-white/20 text-xs font-bold uppercase tracking-widest rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all w-full">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container group" onclick="flipCard(this)">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-image-wrap">
+                                <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Collaboration">
+                                <div class="card-image-overlay"></div>
+                            </div>
+                            <div class="card-front-content">
+                                <div class="card-bar"></div>
+                                <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-2">Partnership</div>
+                                <h3 class="font-display text-2xl font-bold text-white mb-2">Collaboration</h3>
+                                <p class="text-slate-400 text-sm leading-relaxed">Aligning services with your business goals.</p>
+                                <span class="mt-auto text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Tap to Reveal <i class="fa-solid fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-icon-back"><i class="fa-solid fa-users-gear"></i></div>
+                            <h3 class="font-display text-xl font-bold text-white mb-4">Partnership Model</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                                Foster a collaborative partnership with clients, ensuring open communication and aligning our services directly with your success metrics.
+                            </p>
+                            <a href="#" class="mt-auto inline-flex items-center justify-center px-6 py-3 border border-white/20 text-xs font-bold uppercase tracking-widest rounded-sm text-white hover:bg-white hover:text-slate-900 transition-all w-full">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900 text-white pt-24 pb-12 border-t border-slate-800 relative z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+                <div class="col-span-1 md:col-span-1">
+                  <a href="index.html" class="flex items-center group">
+  <div class="bg-white/90 backdrop-blur rounded-xl px-2 py-1 shadow-lg">
+    <img src="images/logo.png" alt="Austin1.ai logo" class="h-10 w-auto">
+  </div>
+</a>
+
+                    <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                        Orchestrating the AI-Native Future for the modern enterprise.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fa-brands fa-linkedin text-xl"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fa-brands fa-twitter text-xl"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fa-brands fa-github text-xl"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-widest mb-6 text-slate-500">Solutions</h4>
+                    <ul class="space-y-4 text-sm font-medium">
+                        <li><a href="telecom-services.html" class="hover:text-cyan-400 transition-colors">Infra for AI</a></li>
+                        <li><a href="it-services.html" class="hover:text-cyan-400 transition-colors">Digital for AI</a></li>
+                        <li><a href="team-enablement.html" class="hover:text-cyan-400 transition-colors">People for AI</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-widest mb-6 text-slate-500">Company</h4>
+                    <ul class="space-y-4 text-sm font-medium">
+                        <li><a href="about.html" class="hover:text-cyan-400 transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-cyan-400 transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-cyan-400 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-widest mb-6 text-slate-500">Stay Connected</h4>
+                    <form class="flex flex-col gap-4">
+                        <input type="email" placeholder="Email Address" class="bg-slate-800 border border-slate-700 text-white px-4 py-3 focus:outline-none focus:border-cyan-500 transition-colors">
+                        <button class="bg-white text-slate-900 px-4 py-3 font-bold uppercase tracking-widest hover:bg-cyan-500 hover:text-white transition-colors">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+                <p>&copy; 2025 Austin1.ai Inc. All rights reserved.</p>
+                <div class="flex space-x-8">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Use</a>
+                    <a href="#" class="hover:text-white transition-colors">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Flip Card Functionality ---
+        function flipCard(cardContainer) {
+            document.querySelectorAll('.card-container.flipped').forEach(flippedCard => {
+                if (flippedCard !== cardContainer) {
+                    flippedCard.classList.remove('flipped');
+                }
+            });
+            cardContainer.classList.toggle('flipped');
+        }
+        
+        // --- Mobile Menu Toggle ---
+        const btn = document.getElementById('mobile-menu-btn');
+    </script>
+    <script src="chatbot.js"></script>
+</body>
+</html>
