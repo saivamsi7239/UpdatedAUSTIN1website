@@ -160,3 +160,30 @@
     bottom: 12px;
   }
 }
+/* Better service formatting inside bot bubble */
+.cb-services-heading{
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.cb-service{
+  padding: 10px 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.cb-service:first-child{
+  border-top: none;
+  padding-top: 0;
+}
+
+.cb-service-title{
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.cb-service-desc{
+  opacity: 0.85;
+  font-size: 13px;
+  line-height: 1.35;
+}
+

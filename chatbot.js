@@ -21,12 +21,26 @@
     }
   };
 
-  function buildServicesReply() {
-    return (
-      "Here are the services we offer:\n" +
-      WEBSITE_KB.services.map(s => `• ${s.title} — ${s.desc}`).join("\n")
-    );
-  }
+function buildServicesReply() {
+  const items = WEBSITE_KB.services
+    .map(
+      s => `
+        <div class="cb-service">
+          <div class="cb-service-title">🔹 ${s.title}</div>
+          <div class="cb-service-desc">${s.desc}</div>
+        </div>
+      `
+    )
+    .join("");
+
+  return `
+    <div class="cb-services-wrap">
+      <div class="cb-services-heading">Here are the services we offer:</div>
+      ${items}
+    </div>
+  `;
+}
+
 
   function bestMatchReply(userText) {
     const msg = (userText || "").toLowerCase().trim();
@@ -116,16 +130,24 @@
   const sendBtn = windowEl.querySelector("#chatbot-send");
   const closeBtn = windowEl.querySelector("#chatbot-close");
 
-  function addMsg(text, who) {
-    const row = document.createElement("div");
-    row.className = `cb-row ${who}`;
-    const bubble = document.createElement("div");
-    bubble.className = "cb-bubble";
-    bubble.textContent = text;
-    row.appendChild(bubble);
-    messages.appendChild(row);
-    messages.scrollTop = messages.scrollHeight;
+function addMsg(text, who) {
+  const row = document.createElement("div");
+  row.className = `cb-row ${who}`;
+
+  const bubble = document.createElement("div");
+  bubble.className = "cb-bubble";
+
+  if (who === "bot") {
+    bubble.innerHTML = text;   // bot can render formatted HTML
+  } else {
+    bubble.textContent = text; // user stays safe text
   }
+
+  row.appendChild(bubble);
+  messages.appendChild(row);
+  messages.scrollTop = messages.scrollHeight;
+}
+
 
   // Default greeting once per page load
   addMsg("Hi! 👋 How can I help you today?", "bot");
